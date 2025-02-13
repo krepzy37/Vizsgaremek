@@ -1,0 +1,129 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: rgb(84, 84, 84);
+}
+
+nav{
+  display: flex;
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+.navigation{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+
+nav ul a button, nav button, .btn-mybtn, .register {
+  background-color: transparent;
+  color: white;
+  border: 1px solid white !important;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s;
+  margin-left: 8px;
+}
+
+nav ul a button:hover, nav button:hover, .btn-mybtn:hover, .register:hover {
+
+  color: white !important;
+  border-color: red !important;
+}
+
+
+/* Hibaüzenet osztály */
+.error-message {
+  margin-top: 5px;
+}
+
+
+
+
+/*      LOGIN         */
+#login{
+  align-items: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  color: white;
+  
+}
+nav a{
+  text-decoration: none;;
+}
+.error-txt{
+  color: red;
+}
+
+.btn-mybtn, .register{
+  margin-top: 15px;
+  margin-bottom: 15px;
+  background-color: #333;
+}
+.btn-mybtn:hover .register:hover{
+  background-color: #333 ;
+}
+
+/*Belépésnél a regisztráció gomb*/
+.register{
+  text-decoration: none;
+  border: white ;
+}
+
+
+
+
+/*aside*/
+/* Alapbeállítás: az aside fixen marad, de nem lóg rá a navbarra */
+aside {
+  width: 14rem; /* Állítsd be az igények szerint */
+  height: 100vh;
+  overflow-y: auto; /* Görgethető legyen */
+  position: fixed;
+  top: 56px; /* Navbar magassága */
+  left: 0;
+  background-color: #212529; /* Sötét háttér */
+  z-index: 1000; /* Legyen a tartalom felett */
+}
+
+/* A fő tartalom tolódjon el az aside szélességével */
+main {
+  margin-left: 14rem; /* Ugyanakkora legyen, mint az aside szélessége */
+  padding: 20px;
+}
+
+/* Reszponzív beállítások mobilhoz */
+@media (max-width: 768px) {
+  aside {
+      width: 60px; /* Kisebb méret mobilon */
+      overflow-x: hidden;
+  }
+
+  main {
+      margin-left: 60px;
+  }
+}
+
+/* Ha teljesen ki akarod kapcsolni az aside-ot mobilon */
+@media (max-width: 576px) {
+  aside {
+      display: none;
+  }
+
+  main {
+      margin-left: 0;
+  }
+}
+
