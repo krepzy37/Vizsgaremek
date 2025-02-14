@@ -6,7 +6,7 @@ session_start();
 include '../php/connect.php';
 
 
-$car_id = 147; 
+$car_id = {{  }}; 
 include '../php/community-template.php'
 ?>
 

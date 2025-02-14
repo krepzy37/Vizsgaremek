@@ -52,7 +52,7 @@
             </a>
             <ul class="collapse list-unstyled ps-3" id="{{brand.brand_id}}Submenu">
                 <li ng-repeat="model in brand.models">
-                    <a href="Kozossegek/{{brand.name}}-{{model.name}}.php" class="nav-link text-white">- {{model.name}}</a>
+                    <a href="{{brand.name}}-{{model.name}}.php" class="nav-link text-white">- {{model.name}}</a>
                 </li>
             </ul>
             <hr>

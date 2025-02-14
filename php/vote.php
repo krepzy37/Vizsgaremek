@@ -1,54 +1,72 @@
 <?php
 session_start();
-require 'connect.php';
+include 'connect.php';
 
+// Check if the user is logged in
 if (!isset($_SESSION['id'])) {
-    echo json_encode(['status' => 'error', 'message' => 'Be kell jelentkezned a szavazáshoz.']);
+    echo json_encode(['success' => false, 'message' => 'Nincs bejelentkezve']);
     exit;
 }
 
-$user_id = $_SESSION['id'];
-$type = $_POST['type']; // 'post' vagy 'comment'
-$id = intval($_POST['id']);
-$vote_type = $_POST['vote_type']; // 'upvote' vagy 'downvote'
+$user_id = $_SESSION['id']; // Logged-in user ID
+$type = $_POST['type'] ?? null; // "post" or "comment"
+$vote_type = $_POST['vote_type'] ?? null; // upvote or downvote
+$id = isset($_POST['id']) ? intval($_POST['id']) : null;
 
-if (!in_array($vote_type, ['upvote', 'downvote'])) {
-    echo json_encode(['status' => 'error', 'message' => 'Érvénytelen szavazási típus.']);
+// Check for required parameters
+if (!$type || !$vote_type || !$id) {
+    echo json_encode(['success' => false, 'message' => 'Hiányzó paraméterek']);
     exit;
 }
 
-// Megnézzük, hogy van-e már szavazat erre az elemre
-$column = ($type === 'post') ? 'post_id' : 'comment_id';
-$checkVoteQuery = "SELECT * FROM votes WHERE user_id = ? AND $column = ?";
-$stmt = $dbconn->prepare($checkVoteQuery);
-$stmt->bind_param("ii", $user_id, $id);
+// Set post_id and comment_id based on the type
+$post_id = ($type === "post") ? $id : null;
+$comment_id = ($type === "comment") ? $id : null;
+
+// Check if the user has already voted
+$query = "SELECT * FROM votes WHERE user_id = ? AND post_id <=> ? AND comment_id <=> ?";
+$stmt = $dbconn->prepare($query);
+$stmt->bind_param("iii", $user_id, $post_id, $comment_id);
 $stmt->execute();
 $result = $stmt->get_result();
-$existingVote = $result->fetch_assoc();
 
-if ($existingVote) {
-    if ($existingVote['vote_type'] === $vote_type) {
-        // Ha ugyanazt a szavazatot adjuk le, töröljük
-        $deleteVoteQuery = "DELETE FROM votes WHERE user_id = ? AND $column = ?";
-        $stmt = $dbconn->prepare($deleteVoteQuery);
-        $stmt->bind_param("ii", $user_id, $id);
-        $stmt->execute();
-        echo json_encode(['status' => 'removed']);
+if ($result->num_rows > 0) {
+    // If the user has already voted, check if it's the same vote
+    $existing_vote = $result->fetch_assoc();
+    
+    if ($existing_vote['vote_type'] === $vote_type) {
+        // If it's the same vote, delete the vote
+        $delete_query = "DELETE FROM votes WHERE user_id = ? AND post_id <=> ? AND comment_id <=> ?";
+        $delete_stmt = $dbconn->prepare($delete_query);
+        $delete_stmt->bind_param("iii", $user_id, $post_id, $comment_id);
+        
+        if ($delete_stmt->execute()) {
+            echo json_encode(['success' => true, 'message' => 'Szavazat törölve!']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Hiba történt a szavazat törlésében']);
+        }
     } else {
-        // Ha másik szavazatot adunk le, módosítjuk
-        $updateVoteQuery = "UPDATE votes SET vote_type = ? WHERE user_id = ? AND $column = ?";
-        $stmt = $dbconn->prepare($updateVoteQuery);
-        $stmt->bind_param("sii", $vote_type, $user_id, $id);
-        $stmt->execute();
-        echo json_encode(['status' => 'changed', 'new_vote' => $vote_type]);
+        // If it's a different vote type, update the vote
+        $update_query = "UPDATE votes SET vote_type = ? WHERE user_id = ? AND post_id <=> ? AND comment_id <=> ?";
+        $update_stmt = $dbconn->prepare($update_query);
+        $update_stmt->bind_param("siii", $vote_type, $user_id, $post_id, $comment_id);
+        
+        if ($update_stmt->execute()) {
+            echo json_encode(['success' => true, 'message' => 'Szavazat frissítve!']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Hiba történt a szavazat frissítésében']);
+        }
     }
 } else {
-    // Ha még nincs szavazat, beszúrjuk
-    $insertVoteQuery = "INSERT INTO votes (user_id, $column, vote_type) VALUES (?, ?, ?)";
-    $stmt = $dbconn->prepare($insertVoteQuery);
-    $stmt->bind_param("iis", $user_id, $id, $vote_type);
-    $stmt->execute();
-    echo json_encode(['status' => 'added', 'vote' => $vote_type]);
-}
+    // If the user hasn't voted yet, save the vote
+    $query = "INSERT INTO votes (user_id, post_id, comment_id, vote_type, created_at) VALUES (?, ?, ?, ?, NOW())";
+    $stmt = $dbconn->prepare($query);
+    $stmt->bind_param("iiis", $user_id, $post_id, $comment_id, $vote_type);
 
-exit;
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true, 'message' => 'Szavazat mentve!']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Hiba történt a szavazat mentésekor']);
+    }
+}
+?>
