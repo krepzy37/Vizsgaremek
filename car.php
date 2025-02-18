@@ -85,287 +85,302 @@ $result = $stmt->get_result();
     <link rel="stylesheet" href="css/cursor.css">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+
+    </style>
 </head>
 <?php
 include 'kisegitok/nav.php';
 
-echo '<img src="php/img/carlogos/' . $car_logo . '" alt="' . $brand_name . ' logo" style="max-width: 200px;">';
+
 ?>
-<h1><?php echo $brand_name . ' ' . $car_name; ?></h1>
-<div>
-    <a href="?brand=<?php echo urlencode($brand); ?>&model=<?php echo urlencode($model); ?>&sort=latest">Legutóbbi</a>
-    <a href="?brand=<?php echo urlencode($brand); ?>&model=<?php echo urlencode($model); ?>&sort=votes_desc">Legjobb</a>
-    <a href="?brand=<?php echo urlencode($brand); ?>&model=<?php echo urlencode($model); ?>&sort=votes_asc">Legrosszabb</a>
-</div>
+<div class="container mt-5">
+    <div class="main-content">
+        <!-- Car Information -->
+        <div class="car-info">
+            <img src="php/img/carlogos/<?php echo $car_logo ?>" alt="<?php echo $brand_name ?> logo" style="max-width: 100px" class="car-logo">
+            <h1><?php echo $brand_name . ' ' . $car_name ?></h1>
+        </div>
 
-<form id="postForm" enctype="multipart/form-data">
-    <label for="title">Cím:</label>
-    <input type="text" id="title" name="title" required>
 
-    <label for="body">Tartalom:</label>
-    <textarea id="body" name="body" required></textarea>
+        <div class="class=" d-flex justify-content-center gap-3 my-3"">
+            <a href="?brand=<?php echo urlencode($brand); ?>&model=<?php echo urlencode($model); ?>&sort=latest">Legutóbbi</a>
+            <a href="?brand=<?php echo urlencode($brand); ?>&model=<?php echo urlencode($model); ?>&sort=votes_desc">Legjobb</a>
+            <a href="?brand=<?php echo urlencode($brand); ?>&model=<?php echo urlencode($model); ?>&sort=votes_asc">Legrosszabb</a>
+        </div>
 
-    <label for="image">Kép:</label>
-    <input type="file" name="image" id="image">
+        <form id="postForm" enctype="multipart/form-data" class="mb-4">
+            <label for="title">Cím:</label>
+            <input type="text" id="title" name="title" required>
 
-    <input type="hidden" name="car_id" value=<?php echo $car_id; ?>>
+            <label for="body">Tartalom:</label>
+            <textarea id="body" name="body" required></textarea>
 
-    <button type="submit">Poszt hozzáadása</button>
-</form>
+            <label for="image">Kép:</label>
+            <input type="file" name="image" id="image">
 
-<script>
-    document.getElementById("postForm").addEventListener("submit", function(event) {
-        event.preventDefault(); // Alapértelmezett form beküldés tiltása
+            <input type="hidden" name="car_id" value=<?php echo $car_id; ?>>
 
-        let formData = new FormData(this); // Form adatok elküldése AJAX-szal
+            <button type="submit">Poszt hozzáadása</button>
+        </form>
 
-        fetch("php/add-post.php", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json()) // JSON választ várunk
-            .then(data => {
-                alert(data.message); // Alert a válasz alapján
-                if (data.success) {
-                    location.reload(); // Sikeres poszt esetén frissítjük az oldalt
-                }
-            })
-            .catch(error => console.error("Hiba:", error));
-    });
-</script>
+        <script>
+            document.getElementById("postForm").addEventListener("submit", function(event) {
+                event.preventDefault(); // Alapértelmezett form beküldés tiltása
 
-<?php
-// Posztok megjelenítése
-if ($result->num_rows > 0) {
-    while ($post = mysqli_fetch_assoc($result)) {
-        // Profilkép elérési útvonal beállítása
-        $profilePic = !empty($post['profile_picture_url']) ? 'php/img/' . htmlspecialchars($post['profile_picture_url']) : 'php/img/default.png';
-        $postImage = !empty($post['post_image_url']) ? 'php/img/' . htmlspecialchars($post['post_image_url']) : '';
+                let formData = new FormData(this); // Form adatok elküldése AJAX-szal
 
-        echo "<div style='display: flex; align-items: center; gap: 10px;'>";
-        echo "<img src='$profilePic' alt='Profilkép' style='width: 40px; height: 40px; border-radius: 50%;'>";
-        echo "<h3>" . htmlspecialchars($post['username']) . "</h3>";
-        echo "</div>";
+                fetch("php/add-post.php", {
+                        method: "POST",
+                        body: formData
+                    })
+                    .then(response => response.json()) // JSON választ várunk
+                    .then(data => {
+                        alert(data.message); // Alert a válasz alapján
+                        if (data.success) {
+                            location.reload(); // Sikeres poszt esetén frissítjük az oldalt
+                        }
+                    })
+                    .catch(error => console.error("Hiba:", error));
+            });
+        </script>
+        <div class="post-list">
+            <?php
+            // Posztok megjelenítése
+            if ($result->num_rows > 0) {
+                while ($post = mysqli_fetch_assoc($result)) {
+                    // Profilkép elérési útvonal beállítása
+                    $profilePic = !empty($post['profile_picture_url']) ? 'php/img/' . htmlspecialchars($post['profile_picture_url']) : 'php/img/default.png';
+                    $postImage = !empty($post['post_image_url']) ? 'php/img/' . htmlspecialchars($post['post_image_url']) : '';
 
-        echo "<h2>" . htmlspecialchars($post['title']) . "</h2>";
-        echo "<p>" . htmlspecialchars($post['body']) . "</p>";
+                    echo "<div class='card mb-4' style='border-radius: 10px;'>";
+                echo "<div class='card-body'>";
+                echo "<div class='d-flex align-items-center gap-2'>";
+                echo "<img src='$profilePic' alt='Profilkép' class='rounded-circle' style='width: 40px; height: 40px;'>";
+                echo "<h5 class='card-title'>" . htmlspecialchars($post['username']) . "</h5>";
+                echo "</div>";
 
-        // Ha van kép, akkor megjelenítjük
-        if ($postImage) {
-            echo "<img src='$postImage' alt='Poszt Kép' style='max-width: 300px; height: auto;'>";
-        }
+                echo "<h4 class='card-subtitle mb-2 text-muted'>" . htmlspecialchars($post['title']) . "</h4>";
+                echo "<p class='card-text'>" . htmlspecialchars($post['body']) . "</p>";
 
-        // Fetching the vote score for the post
-        $vote_query = "SELECT SUM(CASE WHEN vote_type = 'upvote' THEN 1 ELSE -1 END) as score 
+                    // Ha van kép, akkor megjelenítjük
+                    if ($postImage) {
+                        echo "<img src='$postImage' alt='Poszt Kép' class='img-fluid rounded' style='max-width: 300px;'>";
+                    }
+
+                    // Fetching the vote score for the post
+                    $vote_query = "SELECT SUM(CASE WHEN vote_type = 'upvote' THEN 1 ELSE -1 END) as score 
 FROM votes 
 WHERE post_id = ?";
-        $stmt = $dbconn->prepare($vote_query);
-        $stmt->bind_param("i", $post['id']); // Use the current post ID
-        $stmt->execute();
-        $vote_result = $stmt->get_result()->fetch_assoc();
+                    $stmt = $dbconn->prepare($vote_query);
+                    $stmt->bind_param("i", $post['id']); // Use the current post ID
+                    $stmt->execute();
+                    $vote_result = $stmt->get_result()->fetch_assoc();
 
-        // Set score to 0 if there are no votes
-        $score = $vote_result['score'] !== null ? $vote_result['score'] : 0;
+                    // Set score to 0 if there are no votes
+                    $score = $vote_result['score'] !== null ? $vote_result['score'] : 0;
 
-        // Display the post with the vote score
-        echo "<div class='vote-buttons'>
-<button class='upvote' data-id='" . $post['id'] . "' data-type='post'>⬆</button>
-<span id='post-score-" . $post['id'] . "'>" . $score . "</span>
-<button class='downvote' data-id='" . $post['id'] . "' data-type='post'>⬇</button>
-</div>";
+                    // Display the post with the vote score
+                    echo "<div class='mt-2 d-flex align-items-center gap-2'>";
+                echo "<button class='btn btn-outline-success upvote' data-id='" . $post['id'] . "'>⬆</button>";
+                echo "<span id='post-score-" . $post['id'] . "'>" . $score . "</span>";
+                echo "<button class='btn btn-outline-danger downvote' data-id='" . $post['id'] . "'>⬇</button>";
+                echo "</div>";
 
-        $createdAt = date("Y. m. d. H:i", strtotime($post['created_at']));
-        echo "<p><em>Feltöltve: $createdAt</em></p>";
+                    $createdAt = date("Y. m. d. H:i", strtotime($post['created_at']));
+                    echo "<p class='card-text text-muted mt-2'><em>Feltöltve: $createdAt</em></p>";
 
-        if (isset($_SESSION['id']) && $_SESSION['id'] == $post['user_id']) {
-            echo "<button class='edit-post-btn' data-id='" . $post['id'] . "' 
-          data-title='" . htmlspecialchars($post['title']) . "' 
-          data-body='" . htmlspecialchars($post['body']) . "' 
-          data-image='" . $postImage . "'>Szerkesztés</button>";
-            $referer = urlencode($_SERVER['REQUEST_URI']); // Az aktuális oldal URL-je
-            echo "<a href='php/delete-post.php?post_id=" . $post['id'] . "&redirect=" . $referer . "' onclick='return confirm(\"Biztosan törlöd a posztot?\")'>Poszt törlése</a>";
-        }
+                    if (isset($_SESSION['id']) && $_SESSION['id'] == $post['user_id']) {
+                        echo "<button class='btn btn-warning edit-post-btn' data-id='" . $post['id'] . "' 
+                              data-title='" . htmlspecialchars($post['title']) . "' 
+                              data-body='" . htmlspecialchars($post['body']) . "' 
+                              data-image='" . $postImage . "'>Szerkesztés</button>";
+                        echo "<a href='php/delete-post.php?post_id=" . $post['id'] . "' class='btn btn-danger ms-2' onclick='return confirm(\"Biztosan törlöd a posztot?\")'>Poszt törlése</a>";
+                    }
+                    
 
-        // Hozzászólások lekérdezése ehhez a poszthoz
-        $post_id = $post['id'];
-        $comment_query = "SELECT comments.id, comments.body, comments.comment_image_url, users.username, comments.user_id, comments.created_at  
+                    // Hozzászólások lekérdezése ehhez a poszthoz
+                    $post_id = $post['id'];
+                    $comment_query = "SELECT comments.id, comments.body, comments.comment_image_url, users.username, comments.user_id, comments.created_at  
                   FROM comments 
                   JOIN users ON comments.user_id = users.id 
                   WHERE comments.post_id = $post_id";
-        $comment_result = mysqli_query($dbconn, $comment_query);
+                    $comment_result = mysqli_query($dbconn, $comment_query);
 
-        // Hozzászólások szekció
-        echo "<div>";
-        echo "<button type='button' class='toggle-comments' data-post-id='$post_id'>Hozzászólások megjelenítése</button>";
+                    // Hozzászólások szekció
+                    echo "<div>";
+                    echo "<button type='button' class='toggle-comments' data-post-id='$post_id'>Hozzászólások megjelenítése</button>";
 
-        echo "<div class='comments' id='comments-$post_id' style='display:none;'>";
-        while ($comment = mysqli_fetch_assoc($comment_result)) {
-            echo "<p><strong>" . htmlspecialchars($comment['username']) . ":</strong> " . htmlspecialchars($comment['body']) . "</p>";
+                    echo "<div class='comments' id='comments-$post_id' style='display:none;'>";
+                    while ($comment = mysqli_fetch_assoc($comment_result)) {
+                        echo "<p><strong>" . htmlspecialchars($comment['username']) . ":</strong> " . htmlspecialchars($comment['body']) . "</p>";
 
-            // Ha van kommenthez tartozó kép
-            if (!empty($comment['comment_image_url'])) {
-                $commentImage = 'php/img/' . htmlspecialchars($comment['comment_image_url']);
-                echo "<img src='$commentImage' alt='Komment Kép' style='max-width: 200px; height: auto;'>";
-            }
-            $commentCreatedAt = date("Y. m. d. H:i", strtotime($comment['created_at']));
-            echo "<p><em>Feltöltve: $commentCreatedAt</em></p>";
+                        // Ha van kommenthez tartozó kép
+                        if (!empty($comment['comment_image_url'])) {
+                            $commentImage = 'php/img/' . htmlspecialchars($comment['comment_image_url']);
+                            echo "<img src='$commentImage' alt='Komment Kép' style='max-width: 200px; height: auto;'>";
+                        }
+                        $commentCreatedAt = date("Y. m. d. H:i", strtotime($comment['created_at']));
+                        echo "<p><em>Feltöltve: $commentCreatedAt</em></p>";
 
-            // Szavazógombok a kommenthez
-            // Fetching the vote score for the comment
-            $comment_vote_query = "SELECT SUM(CASE WHEN vote_type = 'upvote' THEN 1 ELSE -1 END) as score 
+                        // Szavazógombok a kommenthez
+                        // Fetching the vote score for the comment
+                        $comment_vote_query = "SELECT SUM(CASE WHEN vote_type = 'upvote' THEN 1 ELSE -1 END) as score 
 FROM votes 
 WHERE comment_id = ?";
-            $comment_stmt = $dbconn->prepare($comment_vote_query);
-            $comment_stmt->bind_param("i", $comment['id']); // Use the current comment ID
-            $comment_stmt->execute();
-            $comment_vote_result = $comment_stmt->get_result()->fetch_assoc();
+                        $comment_stmt = $dbconn->prepare($comment_vote_query);
+                        $comment_stmt->bind_param("i", $comment['id']); // Use the current comment ID
+                        $comment_stmt->execute();
+                        $comment_vote_result = $comment_stmt->get_result()->fetch_assoc();
 
-            // Set score to 0 if there are no votes
-            $comment_score = $comment_vote_result['score'] !== null ? $comment_vote_result['score'] : 0;
+                        // Set score to 0 if there are no votes
+                        $comment_score = $comment_vote_result['score'] !== null ? $comment_vote_result['score'] : 0;
 
-            // Display the comment with the vote score
-            echo "<div class='vote-buttons'>
+                        // Display the comment with the vote score
+                        echo "<div class='vote-buttons'>
 <button class='upvote' data-id='" . $comment['id'] . "' data-type='comment'>⬆</button>
 <span id='comment-score-" . $comment['id'] . "'>" . $comment_score . "</span>
 <button class='downvote' data-id='" . $comment['id'] . "' data-type='comment'>⬇</button>
 </div>";
 
-            if (isset($_SESSION['id']) && $_SESSION['id'] == $comment['user_id']) {
-                echo "<button class='edit-comment-btn' data-id='" . $comment['id'] . "' 
+                        if (isset($_SESSION['id']) && $_SESSION['id'] == $comment['user_id']) {
+                            echo "<button class='edit-comment-btn' data-id='" . $comment['id'] . "' 
             data-text='" . htmlspecialchars($comment['body']) . "' 
             data-image='" . $comment['comment_image_url'] . "'>Szerkesztés</button>";
-                $referer = urlencode($_SERVER['REQUEST_URI']); // Az aktuális oldal URL-je
-                echo "<a href='php/delete-comment.php?comment_id=" . $comment['id'] . "&redirect=" . $referer . "' onclick='return confirm(\"Biztosan törlöd a kommentet?\")'>Komment törlése</a>";
-            }
-        }
-        echo "</div>";
-        echo "</div>";
+                            $referer = urlencode($_SERVER['REQUEST_URI']); // Az aktuális oldal URL-je
+                            echo "<a href='php/delete-comment.php?comment_id=" . $comment['id'] . "&redirect=" . $referer . "' onclick='return confirm(\"Biztosan törlöd a kommentet?\")'>Komment törlése</a>";
+                        }
+                    }
+                    echo "</div>";
+                    echo "</div>";
 
-        // Hozzászólás űrlap
-        echo "<form class='comment-form' data-post-id='$post_id' enctype='multipart/form-data'>
+                    // Hozzászólás űrlap
+                    echo "<form class='comment-form' data-post-id='$post_id' enctype='multipart/form-data'>
             <textarea name='comment_text' required></textarea>
             <label for='comment_image'>Kép:</label>
             <input type='file' name='comment_image'>
             <button type='submit'>Hozzászólás hozzáadása</button>
           </form>";
-    }
-} else {
-    // Display message if there are no posts
-    echo "<p>Ebbe a közösségbe még nem posztolt senki. Te lehetsz az első🤩!</p>";
-}
-?>
-<script src="script/comments.js"></script>
+          echo "</div></div>"; // Card end
+                }
+            } else {
+                echo "<p class='alert alert-info'>Ebbe a közösségbe még nem posztolt senki. Te lehetsz az első🤩!</p>";
+            }
+            ?>
+            <script src="script/comments.js"></script>
+echo "</div></div>"; // Card end
+            <!-- Szerkesztő Modal -->
+            <div id="editModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Poszt szerkesztése</h2>
+                    <form id="editPostForm" enctype="multipart/form-data">
+                        <input type="hidden" id="edit_post_id" name="post_id">
 
-<!-- Szerkesztő Modal -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Poszt szerkesztése</h2>
-        <form id="editPostForm" enctype="multipart/form-data">
-            <input type="hidden" id="edit_post_id" name="post_id">
+                        <label for="edit_title">Cím:</label>
+                        <input type="text" id="edit_title" name="title" required>
 
-            <label for="edit_title">Cím:</label>
-            <input type="text" id="edit_title" name="title" required>
+                        <label for="edit_body">Tartalom:</label>
+                        <textarea id="edit_body" name="body" required></textarea>
 
-            <label for="edit_body">Tartalom:</label>
-            <textarea id="edit_body" name="body" required></textarea>
+                        <label for="edit_image">Kép:</label>
+                        <input type="file" name="image" id="edit_image">
 
-            <label for="edit_image">Kép:</label>
-            <input type="file" name="image" id="edit_image">
-
-            <img id="current_post_image" src="" style="max-width: 200px; display: none;">
-            <label for="remove_image">Kép törlése:</label>
-            <input type="checkbox" id="remove_image" name="remove_image">
+                        <img id="current_post_image" src="" style="max-width: 200px; display: none;">
+                        <label for="remove_image">Kép törlése:</label>
+                        <input type="checkbox" id="remove_image" name="remove_image">
 
 
-            <button type="submit">Mentés</button>
-        </form>
-    </div>
-</div>
-
-<style>
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-content {
-        background-color: white;
-        margin: 10% auto;
-        padding: 20px;
-        width: 50%;
-    }
-
-    .close {
-        float: right;
-        font-size: 28px;
-        cursor: pointer;
-    }
-</style>
-
-<script src="script/edit-post.js"></script>
-
-<!-- Komment Szerkesztő Modal -->
-<div id="editCommentModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Komment szerkesztése</h2>
-        <form id="editCommentForm" enctype="multipart/form-data">
-            <input type="hidden" id="edit_comment_id" name="comment_id">
-
-            <label for="edit_comment_text">Szöveg:</label>
-            <textarea id="edit_comment_text" name="comment_text" required></textarea>
-
-            <label for="edit_comment_image">Kép:</label>
-            <input type="file" name="comment_image" id="edit_comment_image">
-
-            <img id="current_comment_image" src="" style="max-width: 200px; display: none;">
-            <div id="delete_image_container" style="display: none;">
-                <input type="checkbox" id="delete_comment_image" name="delete_comment_image">
-                <label for="delete_comment_image">Jelenlegi kép törlése</label>
+                        <button type="submit">Mentés</button>
+                    </form>
+                </div>
             </div>
 
-            <button type="submit">Mentés</button>
-        </form>
+            <style>
+                .modal {
+                    display: none;
+                    position: fixed;
+                    z-index: 1000;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                }
+
+                .modal-content {
+                    background-color: white;
+                    margin: 10% auto;
+                    padding: 20px;
+                    width: 50%;
+                }
+
+                .close {
+                    float: right;
+                    font-size: 28px;
+                    cursor: pointer;
+                }
+            </style>
+
+            <script src="script/edit-post.js"></script>
+
+            <!-- Komment Szerkesztő Modal -->
+            <div id="editCommentModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Komment szerkesztése</h2>
+                    <form id="editCommentForm" enctype="multipart/form-data">
+                        <input type="hidden" id="edit_comment_id" name="comment_id">
+
+                        <label for="edit_comment_text">Szöveg:</label>
+                        <textarea id="edit_comment_text" name="comment_text" required></textarea>
+
+                        <label for="edit_comment_image">Kép:</label>
+                        <input type="file" name="comment_image" id="edit_comment_image">
+
+                        <img id="current_comment_image" src="" style="max-width: 200px; display: none;">
+                        <div id="delete_image_container" style="display: none;">
+                            <input type="checkbox" id="delete_comment_image" name="delete_comment_image">
+                            <label for="delete_comment_image">Jelenlegi kép törlése</label>
+                        </div>
+
+                        <button type="submit">Mentés</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
 
-<style>
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            width: 50%;
+        }
 
-    .modal-content {
-        background-color: white;
-        margin: 10% auto;
-        padding: 20px;
-        width: 50%;
-    }
-
-    .close {
-        float: right;
-        font-size: 28px;
-        cursor: pointer;
-    }
-</style>
-
-<script src="script/edit-comment-vote.js"></script>
-<div class="custom-cursor"></div>
-<div class="cursor-follower"></div>
-<script src="./script/cursor.js"></script>
-</body>
+        .close {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+        }
+    </style>
+    </main>
+    <script src="script/edit-comment-vote.js"></script>
+    <?php include 'kisegitok/footer.php' ?>
+    <div class="custom-cursor"></div>
+    <div class="cursor-follower"></div>
+    <script src="./script/cursor.js"></script>
+    </body>
 
 </html>

@@ -26,6 +26,7 @@ session_start();
 <h1>főoldal</h1>
 
 <?php 
+include "./kisegitok/footer.php";
     include "./kisegitok/end.html";
 
 ?>
