@@ -50,8 +50,8 @@ $output = "
                 </tr>
                 
                 <tr>
+                    <td>{$status}</td>
                     <td><a class=\"update\" href=\"update.php\">Adatok módosítása</a></td>
-                    <td><a class=\"nav-link\" href=\"php/logoutProcess.php\">Kilépés</a></td>
                 </tr>
             </table>
         </div>
