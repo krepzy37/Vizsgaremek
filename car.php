@@ -86,7 +86,11 @@ $result = $stmt->get_result();
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-
+        body{
+            background-image: url(php/img/Ggx5UreWEAAXJ0A.jpg);
+            background-size: cover;
+            background-attachment: fixed;
+        }
     </style>
 </head>
 <?php
@@ -97,33 +101,55 @@ include 'kisegitok/nav.php';
 <div class="container mt-5">
     <div class="main-content">
         <!-- Car Information -->
-        <div class="car-info">
-            <img src="php/img/carlogos/<?php echo $car_logo ?>" alt="<?php echo $brand_name ?> logo" style="max-width: 100px" class="car-logo">
-            <h1><?php echo $brand_name . ' ' . $car_name ?></h1>
+        <div class="container my-4">
+            <div class="card shadow-sm p-4 bg-dark text-light">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="php/img/carlogos/<?php echo $car_logo ?>" alt="<?php echo $brand_name ?> logo" style="max-width: 100px" class="me-3">
+                    <h1 class="m-0"><?php echo $brand_name . ' ' . $car_name ?></h1>
+                </div>
+
+                <div class="d-flex justify-content-start my-3">
+                    <form method="GET" class="d-flex gap-2">
+                        <input type="hidden" name="brand" value="<?php echo urlencode($brand); ?>">
+                        <input type="hidden" name="model" value="<?php echo urlencode($model); ?>">
+                        <label for="sort" class="form-label m-2">Rendezés:</label>
+                        <select name="sort" id="sort" class="form-select bg-secondary text-light border-0" onchange="this.form.submit()">
+                            <option value="latest" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'latest') ? 'selected' : ''; ?>>Legutóbbi</option>
+                            <option value="votes_desc" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'votes_desc') ? 'selected' : ''; ?>>Legjobb</option>
+                            <option value="votes_asc" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'votes_asc') ? 'selected' : ''; ?>>Legrosszabb</option>
+                        </select>
+                    </form>
+                </div>
+
+            </div>
         </div>
 
 
-        <div class="class=" d-flex justify-content-center gap-3 my-3"">
-            <a href="?brand=<?php echo urlencode($brand); ?>&model=<?php echo urlencode($model); ?>&sort=latest">Legutóbbi</a>
-            <a href="?brand=<?php echo urlencode($brand); ?>&model=<?php echo urlencode($model); ?>&sort=votes_desc">Legjobb</a>
-            <a href="?brand=<?php echo urlencode($brand); ?>&model=<?php echo urlencode($model); ?>&sort=votes_asc">Legrosszabb</a>
+        <div class="card shadow-sm col-lg-8 m-auto p-4 mb-4 bg-dark text-light">
+            <h5 class="card-title mb-3">Új poszt hozzáadása</h5>
+            <button type="button" class="toggle-post-form btn btn-secondary mb-3">Poszt hozzáadása megjelenítése</button>
+
+            <form id="postForm" enctype="multipart/form-data" style="display: none;">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Cím:</label>
+                    <input type="text" id="title" name="title" class="form-control bg-secondary text-light" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="body" class="form-label">Tartalom:</label>
+                    <textarea id="body" name="body" class="form-control bg-secondary text-light" rows="4" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="image" class="form-label">Kép:</label>
+                    <input type="file" name="image" id="image" class="form-control bg-secondary text-light">
+                </div>
+
+                <input type="hidden" name="car_id" value="<?php echo $car_id; ?>">
+
+                <button type="submit" class="btn btn-primary w-100">Poszt hozzáadása</button>
+            </form>
         </div>
-
-        <form id="postForm" enctype="multipart/form-data" class="mb-4">
-            <label for="title">Cím:</label>
-            <input type="text" id="title" name="title" required>
-
-            <label for="body">Tartalom:</label>
-            <textarea id="body" name="body" required></textarea>
-
-            <label for="image">Kép:</label>
-            <input type="file" name="image" id="image">
-
-            <input type="hidden" name="car_id" value=<?php echo $car_id; ?>>
-
-            <button type="submit">Poszt hozzáadása</button>
-        </form>
-
         <script>
             document.getElementById("postForm").addEventListener("submit", function(event) {
                 event.preventDefault(); // Alapértelmezett form beküldés tiltása
@@ -148,24 +174,25 @@ include 'kisegitok/nav.php';
             <?php
             // Posztok megjelenítése
             if ($result->num_rows > 0) {
+
                 while ($post = mysqli_fetch_assoc($result)) {
                     // Profilkép elérési útvonal beállítása
                     $profilePic = !empty($post['profile_picture_url']) ? 'php/img/' . htmlspecialchars($post['profile_picture_url']) : 'php/img/default.png';
                     $postImage = !empty($post['post_image_url']) ? 'php/img/' . htmlspecialchars($post['post_image_url']) : '';
 
-                    echo "<div class='card mb-4' style='border-radius: 10px;'>";
-                echo "<div class='card-body'>";
-                echo "<div class='d-flex align-items-center gap-2'>";
-                echo "<img src='$profilePic' alt='Profilkép' class='rounded-circle' style='width: 40px; height: 40px;'>";
-                echo "<h5 class='card-title'>" . htmlspecialchars($post['username']) . "</h5>";
-                echo "</div>";
+                    echo "<div class='card mb-4 col-lg-8  bg-dark text-light' style='border-radius: 10px; margin:auto;'>";
+                    echo "<div class='card-body'>";
+                    echo "<div class='d-flex align-items-center gap-2'>";
+                    echo "<img src='$profilePic' alt='Profilkép' class='rounded-circle  mb-2' style='width: 40px; height: 40px;'>";
+                    echo "<h5 class='card-title '>" . htmlspecialchars($post['username']) . "</h5>";
+                    echo "</div>";
 
-                echo "<h4 class='card-subtitle mb-2 text-muted'>" . htmlspecialchars($post['title']) . "</h4>";
-                echo "<p class='card-text'>" . htmlspecialchars($post['body']) . "</p>";
+                    echo "<h4 class='card-subtitle mb-2'>" . htmlspecialchars($post['title']) . "</h4>";
+                    echo "<p class='card-text'>" . htmlspecialchars($post['body']) . "</p>";
 
                     // Ha van kép, akkor megjelenítjük
                     if ($postImage) {
-                        echo "<img src='$postImage' alt='Poszt Kép' class='img-fluid rounded' style='max-width: 300px;'>";
+                        echo "<img src='$postImage' alt='Poszt Kép' class='img-fluid rounded d-block mx-auto' >";
                     }
 
                     // Fetching the vote score for the post
@@ -180,15 +207,24 @@ WHERE post_id = ?";
                     // Set score to 0 if there are no votes
                     $score = $vote_result['score'] !== null ? $vote_result['score'] : 0;
 
+                    $user_vote_query = "SELECT vote_type FROM votes WHERE user_id = ? AND post_id = ?";
+                    $user_vote_stmt = $dbconn->prepare($user_vote_query);
+                    $user_vote_stmt->bind_param("ii", $_SESSION['id'], $post['id']);
+                    $user_vote_stmt->execute();
+                    $user_vote_result = $user_vote_stmt->get_result();
+                    $user_vote = $user_vote_result->fetch_assoc();
+
+                    $upvote_class = ($user_vote && $user_vote['vote_type'] === 'upvote') ? 'voted' : '';
+                    $downvote_class = ($user_vote && $user_vote['vote_type'] === 'downvote') ? 'voted' : '';
                     // Display the post with the vote score
-                    echo "<div class='mt-2 d-flex align-items-center gap-2'>";
-                echo "<button class='btn btn-outline-success upvote' data-id='" . $post['id'] . "'>⬆</button>";
-                echo "<span id='post-score-" . $post['id'] . "'>" . $score . "</span>";
-                echo "<button class='btn btn-outline-danger downvote' data-id='" . $post['id'] . "'>⬇</button>";
-                echo "</div>";
+                    echo "<div class='vote-buttons mt-2 d-flex align-items-center gap-2'>
+    <button class='upvote btn btn-outline-success $upvote_class' data-id='" . $post['id'] . "' data-type='post'>⬆</button>
+    <span id='post-score-" . $post['id'] . "'>" . $score . "</span>
+    <button class='downvote btn btn-outline-danger $downvote_class' data-id='" . $post['id'] . "' data-type='post'>⬇</button>
+</div>";
 
                     $createdAt = date("Y. m. d. H:i", strtotime($post['created_at']));
-                    echo "<p class='card-text text-muted mt-2'><em>Feltöltve: $createdAt</em></p>";
+                    echo "<p class='d-flex justify-content-end card-text text-muted'><em style='margin-top: -40px'> $createdAt</em></p>";
 
                     if (isset($_SESSION['id']) && $_SESSION['id'] == $post['user_id']) {
                         echo "<button class='btn btn-warning edit-post-btn' data-id='" . $post['id'] . "' 
@@ -197,11 +233,11 @@ WHERE post_id = ?";
                               data-image='" . $postImage . "'>Szerkesztés</button>";
                         echo "<a href='php/delete-post.php?post_id=" . $post['id'] . "' class='btn btn-danger ms-2' onclick='return confirm(\"Biztosan törlöd a posztot?\")'>Poszt törlése</a>";
                     }
-                    
+
 
                     // Hozzászólások lekérdezése ehhez a poszthoz
                     $post_id = $post['id'];
-                    $comment_query = "SELECT comments.id, comments.body, comments.comment_image_url, users.username, comments.user_id, comments.created_at  
+                    $comment_query = "SELECT comments.id, comments.body, comments.comment_image_url, users.profile_picture_url, users.username, comments.user_id, comments.created_at  
                   FROM comments 
                   JOIN users ON comments.user_id = users.id 
                   WHERE comments.post_id = $post_id";
@@ -209,19 +245,46 @@ WHERE post_id = ?";
 
                     // Hozzászólások szekció
                     echo "<div>";
-                    echo "<button type='button' class='toggle-comments' data-post-id='$post_id'>Hozzászólások megjelenítése</button>";
+                    echo "<button type='button' class='toggle-comments btn btn-secondary mt-3 mb-1' data-post-id='$post_id'>Hozzászólások megjelenítése</button>";
 
                     echo "<div class='comments' id='comments-$post_id' style='display:none;'>";
+                    echo '<div class="card shadow-sm p-4 bg-dark text-light mt-4 "">
+          <h5 class="card-title mb-3">Hozzászólás hozzáadása</h5>
+          <form class="comment-form" data-post-id=' . $post_id . ' enctype="multipart/form-data">
+              <div class="mb-3">
+                  <label for="comment_text" class="form-label">Hozzászólás:</label>
+                  <textarea name="comment_text" class="form-control bg-secondary text-light border-0" rows="3" required></textarea>
+              </div>
+              
+              <div class="mb-3">
+                  <label for="comment_image" class="form-label">Kép csatolása:</label>
+                  <input type="file" name="comment_image" class="form-control bg-secondary text-light border-0">
+              </div>
+              
+              <button type="submit" class="btn btn-primary w-100">Hozzászólás hozzáadása</button>
+          </form>
+      </div>';
                     while ($comment = mysqli_fetch_assoc($comment_result)) {
-                        echo "<p><strong>" . htmlspecialchars($comment['username']) . ":</strong> " . htmlspecialchars($comment['body']) . "</p>";
+                        $commentPfp = htmlspecialchars($comment['profile_picture_url']);
+                        echo "<div class='card mb-3 bg-dark text-light'>
+            <div class='card-body'>
+                <div class='d-flex align-items-center mb-2'>
+                    <img src='php/img/$commentPfp' alt='Profilkép' class='rounded-circle' style='width: 35px; height: 35px;'>
+                    <strong class='ms-2'>" . htmlspecialchars($comment['username']) . ":</strong>
+                </div>
+                <p class='card-text'>" . htmlspecialchars($comment['body']) . "</p>";
 
-                        // Ha van kommenthez tartozó kép
-                        if (!empty($comment['comment_image_url'])) {
-                            $commentImage = 'php/img/' . htmlspecialchars($comment['comment_image_url']);
-                            echo "<img src='$commentImage' alt='Komment Kép' style='max-width: 200px; height: auto;'>";
-                        }
-                        $commentCreatedAt = date("Y. m. d. H:i", strtotime($comment['created_at']));
-                        echo "<p><em>Feltöltve: $commentCreatedAt</em></p>";
+                // Ha van kommenthez tartozó kép
+                if (!empty($comment['comment_image_url'])) {
+                    $commentImage = 'php/img/' . htmlspecialchars($comment['comment_image_url']);
+                    echo "<div class='mb-2'>
+                              <img src='$commentImage' alt='Komment Kép'  class='img-fluid' style='max-width: 50%; height: auto; '>
+                          </div>";
+                }
+
+                $commentCreatedAt = date("Y. m. d. H:i", strtotime($comment['created_at']));
+                echo "<p class='d-flex justify-content-end card-text text-muted'><em style='margin-top: -45px;'> $commentCreatedAt</em></p>
+            ";
 
                         // Szavazógombok a kommenthez
                         // Fetching the vote score for the comment
@@ -237,38 +300,35 @@ WHERE comment_id = ?";
                         $comment_score = $comment_vote_result['score'] !== null ? $comment_vote_result['score'] : 0;
 
                         // Display the comment with the vote score
-                        echo "<div class='vote-buttons'>
-<button class='upvote' data-id='" . $comment['id'] . "' data-type='comment'>⬆</button>
+                        echo "<div class='vote-buttons mt-2 mb-2 d-flex align-items-center gap-2'>
+<button class='upvote btn btn-outline-success' data-id='" . $comment['id'] . "' data-type='comment'>⬆</button>
 <span id='comment-score-" . $comment['id'] . "'>" . $comment_score . "</span>
-<button class='downvote' data-id='" . $comment['id'] . "' data-type='comment'>⬇</button>
+<button class='downvote btn btn-outline-danger' data-id='" . $comment['id'] . "' data-type='comment'>⬇</button>
+</div> </div>
 </div>";
 
                         if (isset($_SESSION['id']) && $_SESSION['id'] == $comment['user_id']) {
-                            echo "<button class='edit-comment-btn' data-id='" . $comment['id'] . "' 
+                            echo "<button class='btn btn-warning edit-comment-btn' data-id='" . $comment['id'] . "' 
             data-text='" . htmlspecialchars($comment['body']) . "' 
             data-image='" . $comment['comment_image_url'] . "'>Szerkesztés</button>";
                             $referer = urlencode($_SERVER['REQUEST_URI']); // Az aktuális oldal URL-je
-                            echo "<a href='php/delete-comment.php?comment_id=" . $comment['id'] . "&redirect=" . $referer . "' onclick='return confirm(\"Biztosan törlöd a kommentet?\")'>Komment törlése</a>";
+                            echo "<a class='btn btn-danger ms-2' href='php/delete-comment.php?comment_id=" . $comment['id'] . "&redirect=" . $referer . "' onclick='return confirm(\"Biztosan törlöd a kommentet?\")'>Komment törlése</a>";
                         }
                     }
                     echo "</div>";
                     echo "</div>";
 
-                    // Hozzászólás űrlap
-                    echo "<form class='comment-form' data-post-id='$post_id' enctype='multipart/form-data'>
-            <textarea name='comment_text' required></textarea>
-            <label for='comment_image'>Kép:</label>
-            <input type='file' name='comment_image'>
-            <button type='submit'>Hozzászólás hozzáadása</button>
-          </form>";
-          echo "</div></div>"; // Card end
+                    // 
+                    
+                    
+                    echo "</div></div>"; // Card end
                 }
             } else {
-                echo "<p class='alert alert-info'>Ebbe a közösségbe még nem posztolt senki. Te lehetsz az első🤩!</p>";
+                echo "<p class='col-lg-8 m-auto alert alert-info'>Ebbe a közösségbe még nem posztolt senki. Te lehetsz az első🤩!</p>";
             }
             ?>
             <script src="script/comments.js"></script>
-echo "</div></div>"; // Card end
+
             <!-- Szerkesztő Modal -->
             <div id="editModal" class="modal">
                 <div class="modal-content">
@@ -297,6 +357,13 @@ echo "</div></div>"; // Card end
             </div>
 
             <style>
+                .voted {
+                    background-color: #007bff;
+                    /* Change to your desired highlight color */
+                    color: white;
+                    /* Change text color if needed */
+                }
+
                 .modal {
                     display: none;
                     position: fixed;

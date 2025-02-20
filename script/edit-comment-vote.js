@@ -91,11 +91,54 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (data.success) {
                         // Update the score dynamically
                         updateScore(id, type);
+                        updateVoteButtons(id, type, voteType); // Update the vote buttons accordingly
                     }
                 })
                 .catch(error => console.error("Hálózati hiba: ", error));
         });
     });
+});
+
+function updateVoteButtons(id, type, voteType) {
+    const upvoteButton = document.querySelector(`.upvote[data-id='${id}']`);
+    const downvoteButton = document.querySelector(`.downvote[data-id='${id}']`);
+
+    // Reset button states
+    upvoteButton.classList.remove('voted');
+    downvoteButton.classList.remove('voted');
+
+    // Add the voted class based on the vote type
+    if (voteType === 'upvote') {
+        upvoteButton.classList.add('voted');
+    } else {
+        downvoteButton.classList.add('voted');
+    }
+}
+
+// Fetch user vote status on page load
+
+voteButtons.forEach(button => {
+    const id = button.getAttribute("data-id");
+    const type = button.classList.contains("upvote") ? "post" : "comment";
+
+    fetch("php/get-user-vote.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `id=${id}&type=${type}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.vote_type === 'upvote') {
+                button.classList.add('voted');
+            } else if (data.vote_type === 'downvote') {
+                button.classList.add('voted');
+            }
+        }
+    })
+    .catch(error => console.error("Hálózati hiba: ", error));
 });
 
 // Function to update the score dynamically
@@ -118,3 +161,4 @@ function updateScore(id, type) {
         })
         .catch(error => console.error("Hálózati hiba: ", error));
 }
+

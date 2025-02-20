@@ -26,7 +26,7 @@ document.querySelectorAll('.comment-form').forEach(form => {
         formData.append('comment_text', commentText);
         formData.append('post_id', postId);
         if (commentImage) formData.append('comment_image', commentImage); // Kép hozzáadása
-
+        console.log("Post ID:", postId);
         fetch("php/add-comment.php", {
                 method: "POST",
                 body: formData
@@ -37,7 +37,19 @@ document.querySelectorAll('.comment-form').forEach(form => {
                 if (data.success) {
                     location.reload(); // Oldal frissítése a sikeres komment után
                 }
+                
             })
             .catch(error => console.error("Hiba:", error));
     });
+});
+
+document.querySelector('.toggle-post-form').addEventListener('click', function() {
+    let postForm = document.getElementById('postForm');
+    if (postForm.style.display === 'none') {
+        postForm.style.display = 'block';
+        this.textContent = 'Poszt hozzáadása elrejtése';
+    } else {
+        postForm.style.display = 'none';
+        this.textContent = 'Poszt hozzáadása megjelenítése';
+    }
 });

@@ -13,7 +13,7 @@
                         <a class="nav-link" href="index.php">Főoldal</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="contact.php">Kapcsolat</a>
+                        <!--<a class="nav-link" href="contact.php">Kapcsolat</a>-->
                     </li>
                 </ul>
                 <div class="d-flex">

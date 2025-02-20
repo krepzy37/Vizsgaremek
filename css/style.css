@@ -1,3 +1,4 @@
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -83,7 +84,7 @@ nav a {
 /* Responsive adjustments for mobile */
 /* Footer container */
 .footer {
-  background-color: #333;
+  background-color: #333333da;
   color: white;
   padding: 40px 0;
   font-family: Arial, sans-serif;
