@@ -8,7 +8,7 @@ $model = isset($_GET['model']) ? $_GET['model'] : '';
 
 // Prepare the SQL query to fetch the car details
 $car_query = "
-    SELECT cars.id AS car_id, cars.name AS car_name, brands.logo_url, brands.name AS brand_name 
+    SELECT cars.id AS car_id, cars.bg_image_url AS bg, cars.name AS car_name, brands.logo_url, brands.name AS brand_name 
     FROM cars 
     JOIN brands ON cars.brand_id = brands.id 
     WHERE brands.name = ? AND cars.name = ?";
@@ -70,7 +70,7 @@ $stmt = $dbconn->prepare($query);
 $stmt->bind_param("i", $car_id);
 $stmt->execute();
 $result = $stmt->get_result();
-
+$bg_image_url = htmlspecialchars($car['bg']);
 ?>
 <!DOCTYPE html>
 <html lang="hu" ng-app="carApp">
@@ -87,7 +87,7 @@ $result = $stmt->get_result();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body{
-            background-image: url(php/img/Ggx5UreWEAAXJ0A.jpg);
+            background-image: url('php/img/<?php echo $bg_image_url; ?>');
             background-size: cover;
             background-attachment: fixed;
         }
@@ -231,7 +231,9 @@ WHERE post_id = ?";
                               data-title='" . htmlspecialchars($post['title']) . "' 
                               data-body='" . htmlspecialchars($post['body']) . "' 
                               data-image='" . $postImage . "'>Szerkesztés</button>";
-                        echo "<a href='php/delete-post.php?post_id=" . $post['id'] . "' class='btn btn-danger ms-2' onclick='return confirm(\"Biztosan törlöd a posztot?\")'>Poszt törlése</a>";
+                              $referer = urlencode($_SERVER['REQUEST_URI']); // Az aktuális oldal URL-je
+                              echo "<a href='php/delete-post.php?post_id=" . $post['id'] . "&redirect=" . $referer . "' class='btn btn-danger ms-2' onclick='return confirm(\"Biztosan törlöd a posztot?\")'>Poszt törlése</a>";
+                              
                     }
 
 

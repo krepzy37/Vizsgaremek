@@ -16,7 +16,7 @@
             <div class="footer-social" >
                 <a href="#" class="social-icon"><img src="php/img/facebook.png" alt="fb" style="max-width: 80px"></a>
                 <a href="#" class="social-icon"><img src="php/img/instagram.png" alt="ig" style="max-width: 80px"></a>
-                <a href="#" class="social-icon"><img src="php/img/twitter.png" alt="tw" style="max-width: 80px"></a>
+                <a href="https://x.com/cartalkhu" target="_blank" class="social-icon"><img src="php/img/twitter.png" alt="tw" style="max-width: 80px"></a>
             </div>
         </div>
     </div>
