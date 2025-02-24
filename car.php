@@ -127,7 +127,7 @@ include 'kisegitok/nav.php';
 
         <div class="card shadow-sm col-lg-8 m-auto p-4 mb-4 bg-dark text-light">
             <h5 class="card-title mb-3">Új poszt hozzáadása</h5>
-            <button type="button" class="toggle-post-form btn btn-secondary mb-3">Poszt hozzáadása megjelenítése</button>
+            <button type="button" class="toggle-post-form btn btn-secondary mb-3">✍️ Poszt írása</button>
 
             <form id="postForm" enctype="multipart/form-data" style="display: none;">
                 <div class="mb-3">

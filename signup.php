@@ -46,5 +46,5 @@ if (isset($_SESSION['user_id'])) {
     
     <script src="script/signup.js"></script>
     
-    <script src="script/signup_autofill.js"></script>
+   <!-- <script src="script/signup_autofill.js"></script>-->
     <?php include "kisegitok/end.html"?>

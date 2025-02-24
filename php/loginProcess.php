@@ -26,7 +26,7 @@ $hash = $row['password_hash'];
 if(!empty($writtenemail) && !empty($writtenpass)){
 
     if (!password_verify($writtenpass, $hash)) {
-        echo "Hibás bejelntkezési adatok.";
+        echo "Hibás bejelentkezési adatok.";
         return;
     } 
 
@@ -42,6 +42,7 @@ if(!empty($writtenemail) && !empty($writtenpass)){
                 WHERE id = {$row['id']}");
                 if($sql2){
                     $_SESSION['id'] = $row['id'];
+                    $_SESSION['user_role'] = $row['role'];
                     $_SESSION['last_activity'] = time(); // Utolsó aktivitás ideje
                     echo "success";
                 }      
