@@ -1,3 +1,7 @@
+body:has(.content.loginBG) {
+  background-image: url(../php/img/loginBG.png); 
+  background-size: cover; width: 100%;
+}
 
 body {
   font-family: Arial, sans-serif;
@@ -52,13 +56,14 @@ nav button:hover,
 }
 
 /* Login */
-#login {
+#login, #signup{
   align-items: center;
   display: flex;
   align-items: center;
   flex-direction: column;
   text-align: center;
   color: white;
+  
 }
 
 nav a {
@@ -314,4 +319,86 @@ nav a {
 /* Ha fixálod a navbar-t, akkor a következő tartalom ne takarja el a navbar-t */
 body {
   padding-top: 80px; /* állítsd be a navbar magasságát, hogy ne takarja el a tartalmat */
+}
+
+
+.loginBox{
+  padding-top: 20px;
+}
+
+.wrapper{
+  background-color: rgba(200, 200, 200, 0.8); /* Világosszürke háttér 80% átlátszósággal */
+  padding: 20px;
+  border-radius: 10px;
+  color: #333;
+}
+
+
+/* AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
+/* Általános beállítás az input mezőkre */
+.field input {
+  width: 100%;
+  height: 45px; /* Egységes magasság */
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Jelszómező speciális beállítása az ikon miatt */
+.input-container {
+  position: relative;
+  width: 100%;
+}
+
+.input-container input {
+  width: 100%;
+  height: 45px; /* Ugyanaz a magasság, mint a többi inputnál */
+  padding-right: 40px; /* Helyet hagy a szem ikon számára */
+}
+
+.input-container i {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+  font-size: 1.2rem;
+}
+
+/* GOMB visszaállítása az eredeti formára */
+.field.button input {
+  width: auto; /* Nem terjed ki teljes szélességre */
+  height: auto;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+/* Reszponzív módosítás kisebb kijelzőkre */
+@media (max-width: 768px) {
+  .field input {
+      height: 40px; /* Kicsit kisebb méret mobilon */
+  }
+
+  .input-container input {
+      height: 40px;
+  }
+
+  .input-container i {
+      font-size: 1rem;
+      right: 8px;
+  }
+
+  .field.button input {
+      padding: 8px 16px; /* Kisebb padding mobilon */
+      font-size: 0.9rem;
+  }
 }

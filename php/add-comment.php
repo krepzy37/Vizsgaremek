@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // SQL beszúrás a kommentbe
     $user_id = $_SESSION['id'];  // A felhasználó azonosítója a session-ból
+    /*$status = 'Active'; // Alapértelmezett státusz*/
     $query = "INSERT INTO comments (post_id, user_id, body, comment_image_url) 
               VALUES ($post_id, $user_id, '$comment_text', '$comment_image')";
     

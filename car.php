@@ -52,6 +52,7 @@ $query = "
     SELECT posts.*, 
            users.username, 
            users.profile_picture_url, 
+           users.role,
            posts.created_at,
            COALESCE(vote_counts.vote_count, 0) AS vote_count
     FROM posts 
@@ -62,7 +63,7 @@ $query = "
         FROM votes
         GROUP BY post_id
     ) AS vote_counts ON posts.id = vote_counts.post_id
-    WHERE posts.car_id = ?
+    WHERE posts.car_id = ? AND posts.status = 'Active'
     $order
 ";
 
@@ -184,7 +185,9 @@ include 'kisegitok/nav.php';
                     echo "<div class='card-body'>";
                     echo "<div class='d-flex align-items-center gap-2'>";
                     echo "<img src='$profilePic' alt='Profilkép' class='rounded-circle  mb-2' style='width: 40px; height: 40px;'>";
-                    echo "<h5 class='card-title '>" . htmlspecialchars($post['username']) . "</h5>";
+                    $roleTag = ($post['role'] == 'Moderator') ? " <span class='text-warning'>[Moderator]</span>" : "";
+
+                    echo "<h5 class='card-title'>" . htmlspecialchars($post['username']) . $roleTag . "</h5>";
                     echo "</div>";
 
                     echo "<h4 class='card-subtitle mb-2'>" . htmlspecialchars($post['title']) . "</h4>";
@@ -226,25 +229,34 @@ WHERE post_id = ?";
                     $createdAt = date("Y. m. d. H:i", strtotime($post['created_at']));
                     echo "<p class='d-flex justify-content-end card-text text-muted'><em style='margin-top: -40px'> $createdAt</em></p>";
 
-                    if (isset($_SESSION['id']) && $_SESSION['id'] == $post['user_id']) {
-                        echo "<button class='btn btn-warning edit-post-btn' data-id='" . $post['id'] . "' 
-                              data-title='" . htmlspecialchars($post['title']) . "' 
-                              data-body='" . htmlspecialchars($post['body']) . "' 
-                              data-image='" . $postImage . "'>Szerkesztés</button>";
-                              $referer = urlencode($_SERVER['REQUEST_URI']); // Az aktuális oldal URL-je
-                              echo "<a href='php/delete-post.php?post_id=" . $post['id'] . "&redirect=" . $referer . "' class='btn btn-danger ms-2' onclick='return confirm(\"Biztosan törlöd a posztot?\")'>Poszt törlése</a>";
-                              
+                    if (isset($_SESSION['id'])) {
+                        // Ha a bejelentkezett felhasználó a poszt írója, megjelenik a szerkesztés gomb
+                        if ($_SESSION['id'] == $post['user_id']) {
+                            echo "<button class='btn btn-warning edit-post-btn' data-id='" . $post['id'] . "' 
+                                  data-title='" . htmlspecialchars($post['title']) . "' 
+                                  data-body='" . htmlspecialchars($post['body']) . "' 
+                                  data-image='" . $postImage . "'>Szerkesztés</button>";
+                        }
+                    
+                        // Ha a felhasználó a poszt írója VAGY moderátor, megjelenik a törlés gomb
+                        if ($_SESSION['id'] == $post['user_id'] || $_SESSION['user_role'] == 'Moderator') {
+                            $referer = urlencode($_SERVER['REQUEST_URI']); // Az aktuális oldal URL-je
+                            echo "<a href='php/delete-post.php?post_id=" . $post['id'] . "&redirect=" . $referer . "' 
+                                  class='btn btn-danger ms-2' 
+                                  onclick='return confirm(\"Biztosan törlöd a posztot?\")'>Poszt törlése</a>";
+                        }
                     }
+                    
 
 
                     // Hozzászólások lekérdezése ehhez a poszthoz
                     $post_id = $post['id'];
-                    $comment_query = "SELECT comments.id, comments.body, comments.comment_image_url, users.profile_picture_url, users.username, comments.user_id, comments.created_at  
+                    $comment_query = "SELECT comments.id, comments.body, comments.comment_image_url, users.profile_picture_url, users.username, users.role, comments.user_id, comments.created_at  
                   FROM comments 
                   JOIN users ON comments.user_id = users.id 
-                  WHERE comments.post_id = $post_id";
+                  WHERE comments.post_id = $post_id AND comments.status = 'Active'";
                     $comment_result = mysqli_query($dbconn, $comment_query);
-
+                    
                     // Hozzászólások szekció
                     echo "<div>";
                     echo "<button type='button' class='toggle-comments btn btn-secondary mt-3 mb-1' data-post-id='$post_id'>Hozzászólások megjelenítése</button>";
@@ -267,12 +279,15 @@ WHERE post_id = ?";
           </form>
       </div>';
                     while ($comment = mysqli_fetch_assoc($comment_result)) {
+                        $roleTag = ($comment['role'] == 'Moderator') ? " <span class='text-warning'>[Moderator]</span>" : "";
                         $commentPfp = htmlspecialchars($comment['profile_picture_url']);
+                        
                         echo "<div class='card mb-3 bg-dark text-light'>
             <div class='card-body'>
                 <div class='d-flex align-items-center mb-2'>
                     <img src='php/img/$commentPfp' alt='Profilkép' class='rounded-circle' style='width: 35px; height: 35px;'>
-                    <strong class='ms-2'>" . htmlspecialchars($comment['username']) . ":</strong>
+                    
+                    <strong class='ms-2'>" . htmlspecialchars($comment['username']) . $roleTag ."</strong>
                 </div>
                 <p class='card-text'>" . htmlspecialchars($comment['body']) . "</p>";
 
@@ -309,13 +324,20 @@ WHERE comment_id = ?";
 </div> </div>
 </div>";
 
-                        if (isset($_SESSION['id']) && $_SESSION['id'] == $comment['user_id']) {
-                            echo "<button class='btn btn-warning edit-comment-btn' data-id='" . $comment['id'] . "' 
-            data-text='" . htmlspecialchars($comment['body']) . "' 
-            data-image='" . $comment['comment_image_url'] . "'>Szerkesztés</button>";
-                            $referer = urlencode($_SERVER['REQUEST_URI']); // Az aktuális oldal URL-je
-                            echo "<a class='btn btn-danger ms-2' href='php/delete-comment.php?comment_id=" . $comment['id'] . "&redirect=" . $referer . "' onclick='return confirm(\"Biztosan törlöd a kommentet?\")'>Komment törlése</a>";
-                        }
+if (isset($_SESSION['id'])) {
+    // Ha a belépett user a komment írója, megjelenik a szerkesztés gomb
+    if ($_SESSION['id'] == $comment['user_id']) {
+        echo "<button class='btn btn-warning edit-comment-btn' data-id='" . $comment['id'] . "' 
+              data-text='" . htmlspecialchars($comment['body']) . "' 
+              data-image='" . $comment['comment_image_url'] . "'>Szerkesztés</button>";
+    }
+
+    // Ha a belépett user a komment írója VAGY moderátor, megjelenik a törlés gomb
+    if ($_SESSION['id'] == $comment['user_id'] || $_SESSION['user_role'] == 'Moderator') {
+        $referer = urlencode($_SERVER['REQUEST_URI']); // Az aktuális oldal URL-je
+        echo "<a class='btn btn-danger ms-2' href='php/delete-comment.php?comment_id=" . $comment['id'] . "&redirect=" . $referer . "' onclick='return confirm(\"Biztosan törlöd a kommentet?\")'>Komment törlése</a>";
+    }
+}
                     }
                     echo "</div>";
                     echo "</div>";

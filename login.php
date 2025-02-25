@@ -12,7 +12,7 @@ if (isset($_SESSION['user_id'])) {
 
 <body>
 <?php include_once "kisegitok/nav.php"; ?>
-    <div id="login" class="content">
+    <div id="login" class="content loginBG">
 
         <div class="wrapper">
      
@@ -23,26 +23,29 @@ if (isset($_SESSION['user_id'])) {
                     <div class="error-txt"></div>
 
                     <div class="field input">
-                        <h3><label for="email" style="padding-top: 20px;">E-mail:</label> </h3>
+                        <h3 for="email" class="loginBox">E-mail:</h3>
                         <input type="email" id="email" placeholder="E-mail cím" name="email">
                     </div>
                     <div class="field input">
-                        <h3><label for="password" style="padding-top: 20px;">Jelszó:</label></h3>
-                        <input type="password" id="password" placeholder="Jelszó" name="password">
-                        <i class="fas fa-eye"></i>
+                        <h3 for="password" class="loginBox">Jelszó:</h3>
+                        <div class="input-container">
+                            <input type="password" id="password" placeholder="Jelszó" name="password">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        
                     </div>
 
-                    <div class="filed button">
+                    <div class="field button">
                         <input class="btn-primary btn-mybtn" type="submit" value="Bejelentkezés">
                     </div>
                 </form>
                 <div class="link">
                     <h4>Ha még nincs regisztrációja:</h4>
-                    <a class="btn-primary btn-mybtn register" href="signup.php">Regisztráció</a>
+                    <a class="btn-primary btn-mybtn register" style="text-decoration: none; font-weight: bold;" href="signup.php">Regisztráció</a>
                 </div>
             </section>
         </div>
     </div>
     <script src="script/pass-show-hide.js"></script>
     <script src="script/login.js"></script>
-    <?php include "kisegitok/end.html"?>
+<?php include "kisegitok/end.html"?>

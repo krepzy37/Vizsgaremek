@@ -9,6 +9,7 @@
     <div class="denied" >
         <img style="margin: auto" src="../php/img/access-is-denied-thumbnail.jpg" alt="ad">
         <h1 style="color: red;">Hozzáférés megtagadva! (Nem rendelkezel megfelelő jogosultságokkal)</h1>
+        <a href="../index.php">Vissza a főoldalra</a>
     </div>
 </body>
 </html>
