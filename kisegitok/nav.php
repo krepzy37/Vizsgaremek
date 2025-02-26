@@ -12,10 +12,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="index.php">Főoldal</a>
                     </li>
-                    <li class="nav-item">
-                        <!--<a class="nav-link" href="contact.php">Kapcsolat</a>-->
-                    </li>
+                    <!--<li class="nav-item">
+    <input type="text" name="query" placeholder="Felhasználónév" id="searchInput" onkeyup="searchUsers(this.value)">
+    <div id="searchResults"></div>
+</li>-->
                 </ul>
+                <!-- Keresési sáv -->
+                <form action="profile_search.php" method="GET" class="d-flex ms-auto">
+                    <input type="text" name="query" placeholder="Felhasználónév" class="form-control" id="searchInput" onkeyup="searchUsers(this.value)">
+                    <button type="submit" class="btn btn-primary ms-2">Keresés</button>
+                </form>
                 <div class="d-flex">
                     <?php if (isset($_SESSION['id'])): 
                         include_once "php/connect.php";
@@ -35,13 +41,55 @@
             </div>
         </div>
     </nav>
-
+    <div id="searchResults" class="position-absolute w-100" style="top: 70px; z-index: 9998;"></div>
     <div class="menu-btn">
     <div class="menu-btn__burger">
         <i class="fas fa-car"></i>
     </div>
 </div>
+<style>
+    /* Navbar és keresési sáv elrendezés */
+    .navbar-nav {
+        margin-right: 10px;
+    }
 
+    .d-flex.ms-auto {
+        margin-left: auto;
+    }
+
+    /* Keresési eredmények */
+    #searchResults {
+        background-color: #fff;
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 5px;
+        position: absolute;
+        top: 70px; /* navbar alatt */
+        left: 0;
+        right: 0;
+        z-index: 9998;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #searchResults ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    #searchResults li {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    #searchResults li a {
+        text-decoration: none;
+        color: #000;
+    }
+
+    #searchResults li a:hover {
+        background-color: #f1f1f1;
+    }
+</style>
 <!-- Oldalsó Menü -->
 <div class="side-menu">
     <div class="offcanvas-body">
@@ -114,6 +162,24 @@
         });
     });
 });
+
+
+
+function searchUsers(query) {
+        if (query.length === 0) {
+            document.getElementById("searchResults").innerHTML = "";
+            return;
+        }
+
+        let xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+                document.getElementById("searchResults").innerHTML = this.responseText;
+            }
+        };
+        xhr.open("GET", "search_users.php?query=" + query, true);
+        xhr.send();
+    }
 </script>
 
 
