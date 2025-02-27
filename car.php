@@ -199,9 +199,7 @@ include 'kisegitok/nav.php';
                     }
 
                     // Fetching the vote score for the post
-                    $vote_query = "SELECT SUM(CASE WHEN vote_type = 'upvote' THEN 1 ELSE -1 END) as score 
-FROM votes 
-WHERE post_id = ?";
+                    $vote_query = "SELECT SUM(CASE WHEN vote_type = 'upvote' THEN 1 ELSE -1 END) as score FROM votes WHERE post_id = ?";
                     $stmt = $dbconn->prepare($vote_query);
                     $stmt->bind_param("i", $post['id']); // Use the current post ID
                     $stmt->execute();

@@ -12,36 +12,36 @@
                     <li class="nav-item">
                         <a class="nav-link" href="index.php">Főoldal</a>
                     </li>
-                    <!--<li class="nav-item">
-    <input type="text" name="query" placeholder="Felhasználónév" id="searchInput" onkeyup="searchUsers(this.value)">
-    <div id="searchResults"></div>
-</li>-->
+                    <li>
+                    <form action="profile_search.php" method="GET" class="d-flex ms-auto ">
+                    <input type="text" name="query" placeholder="Felhasználónév" class="form-control" id="searchInput" onkeyup="searchUsers(this.value)">
+                    
+                </form>
+                    </li>
                 </ul>
                 <!-- Keresési sáv -->
-                <form action="profile_search.php" method="GET" class="d-flex ms-auto">
-                    <input type="text" name="query" placeholder="Felhasználónév" class="form-control" id="searchInput" onkeyup="searchUsers(this.value)">
-                    <button type="submit" class="btn btn-primary ms-2">Keresés</button>
-                </form>
+                
                 <div class="d-flex">
-                    <?php if (isset($_SESSION['id'])): 
-                        include_once "php/connect.php";
-                        $id = $_SESSION['id'];
-                        $query = mysqli_query($dbconn, "SELECT username, profile_picture_url FROM users WHERE id = $id");
-                        $user = mysqli_fetch_assoc($query);
-                    ?>
-                        <a href="php/logoutProcess.php" class="btn btn-outline-light me-2">Kilépés</a>
-                        <a href="profile.php" class="btn btn-outline-light">
-                            <img src="php/img/<?php echo htmlspecialchars($user['profile_picture_url']); ?>" alt="Profilkép" style="width:30px; height:30px; border-radius:50%;"> 
-                            <?php echo htmlspecialchars($user['username']); ?>
-                        </a>
-                    <?php else: ?>
-                        <a href="login.php" class="btn btn-outline-light">Belépés</a>
-                    <?php endif; ?>
+                <?php if (isset($_SESSION['id'])): 
+    include_once "php/connect.php";
+    $id = $_SESSION['id'];
+    $query = mysqli_query($dbconn, "SELECT username, profile_picture_url FROM users WHERE id = $id");
+    $loggedInUser = mysqli_fetch_assoc($query); // Eredeti $user helyett új változó
+?>
+    <a href="php/logoutProcess.php" class="btn btn-outline-light me-2">Kilépés</a>
+    <a href="profile.php?user_id=<?php echo $id; ?>" class="btn btn-outline-light">
+        <img src="php/img/<?php echo htmlspecialchars($loggedInUser['profile_picture_url']); ?>" alt="Profilkép" style="width:30px; height:30px; border-radius:50%;"> 
+        <?php echo htmlspecialchars($loggedInUser['username']); ?>
+    </a>
+<?php else: ?>
+    <a href="login.php" class="btn btn-outline-light">Belépés</a>
+<?php endif; ?>
+
                 </div>
             </div>
         </div>
     </nav>
-    <div id="searchResults" class="position-absolute w-100" style="top: 70px; z-index: 9998;"></div>
+    <div id="searchResults" class="position-absolute w-100 " style="top: 70px; z-index: 9998;"></div>
     <div class="menu-btn">
     <div class="menu-btn__burger">
         <i class="fas fa-car"></i>
@@ -102,7 +102,7 @@
                 </a>
                 <ul class="collapse list-unstyled ps-3" id="{{brand.brand_id}}Submenu">
                     <li ng-repeat="model in brand.models" class="nav-item">
-                        <a href="car.php?brand={{brand.name}}&model={{model.name}}" class="nav-link text-light">· {{model.name}}</a>
+                        <a href="car.php?brand={{brand.name}}&model={{model.name}}" class="nav-link text-light">▶  {{model.name}}</a>
                     </li>
                 </ul>
                 <hr>

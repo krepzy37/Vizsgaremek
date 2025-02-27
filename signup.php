@@ -4,7 +4,7 @@ session_start();
 
 // Ellenőrzi, hogy a felhasználó már be van-e jelentkezve
 if (isset($_SESSION['user_id'])) {
-    header("location:index.php");
+    header("location:login.php");
 }
 ?>
 <?php include_once "kisegitok/head.html"; ?>
