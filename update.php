@@ -69,7 +69,7 @@ $profile_picture = $row['profile_picture_url'];
                 </div>
             </form>
             
-            <div class="link">Meggondolta magát?<a href="profile.php">Vissza a profilra</a></div>
+            <div class="link">Meggondolta magát? <a href="profile.php?user_id=<?php echo $user_id; ?>">Vissza a profilra</a></div>
         </section>
     </div>
 </div>

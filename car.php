@@ -469,7 +469,8 @@ if (isset($_SESSION['id'])) {
     <?php include 'kisegitok/footer.php' ?>
     <div class="custom-cursor"></div>
     <div class="cursor-follower"></div>
-    <script src="./script/cursor.js"></script>
+    <script src="script/cursor.js"></script>
+    <script src="script/create-post-show-hide.js"></script>
     </body>
 
 </html>
