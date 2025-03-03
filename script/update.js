@@ -17,7 +17,8 @@ xhr.onload = ()=>{
             let data = xhr.response;
             //console.log(data);
             if(data == "success"){
-                location.href = "profile.php"
+                let userId = form.getAttribute("data-user-id");
+location.href = "profile.php?user_id=" + userId;
             }else{
                 errorText.textContent = data;
                 errorText.style.display = "block";               

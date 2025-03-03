@@ -35,7 +35,7 @@ $profile_picture = $row['profile_picture_url'];
     <div class="wrapper">
         <section class="form signup">
             <header>Adatok módosítása</header>
-            <form action="process_update.php" method="POST" enctype="multipart/form-data" autocomplete="off">
+            <form action="process_update.php" method="POST" enctype="multipart/form-data" autocomplete="off" data-user-id="<?php echo $user_id; ?>">
                 <div class="error-txt"></div>
 
                 <!-- Felhasználói azonosító (rejtett mező) -->

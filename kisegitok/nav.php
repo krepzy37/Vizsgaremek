@@ -18,6 +18,7 @@
                     
                 </form>
                     </li>
+                    
                 </ul>
                 <!-- Keresési sáv -->
                 
@@ -25,14 +26,18 @@
                 <?php if (isset($_SESSION['id'])): 
     include_once "php/connect.php";
     $id = $_SESSION['id'];
-    $query = mysqli_query($dbconn, "SELECT username, profile_picture_url FROM users WHERE id = $id");
+    $query = mysqli_query($dbconn, "SELECT username, role, profile_picture_url FROM users WHERE id = $id");
     $loggedInUser = mysqli_fetch_assoc($query); // Eredeti $user helyett új változó
 ?>
+<?php if ($loggedInUser['role'] == 'Moderator'): ?>
+                        <a href="admin/moderator.php" class="btn btn-outline-light btn-warning text-dark me-2">Moderátori Panel</a>
+                    <?php endif; ?>
     <a href="php/logoutProcess.php" class="btn btn-outline-light me-2">Kilépés</a>
     <a href="profile.php?user_id=<?php echo $id; ?>" class="btn btn-outline-light">
         <img src="php/img/<?php echo htmlspecialchars($loggedInUser['profile_picture_url']); ?>" alt="Profilkép" style="width:30px; height:30px; border-radius:50%;"> 
         <?php echo htmlspecialchars($loggedInUser['username']); ?>
     </a>
+    
 <?php else: ?>
     <a href="login.php" class="btn btn-outline-light">Belépés</a>
 <?php endif; ?>

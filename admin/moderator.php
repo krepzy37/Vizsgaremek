@@ -40,6 +40,8 @@ WHERE c.status = 'Archived';
 ";
 $archived_comments_result = $dbconn->query($archived_comments_query);
 
+
+
 ?>
 
 <!DOCTYPE html>
@@ -57,6 +59,14 @@ $archived_comments_result = $dbconn->query($archived_comments_query);
     <div class="container mt-5">
         <h1 class="mb-4">Moderator Dashboard</h1>
         <a href="../index.php">Vissza a főoldalra</a>
+
+        <label for="tableSelector">Válaszd ki a megjelenítendő táblázatot:</label>
+        <select id="tableSelector" class="form-select w-25 mb-4">
+            <option value="users">Felhasználók</option>
+            <option value="posts">Archivált Posztok</option>
+            <option value="comments">Archivált Kommentek</option>
+        </select>
+        <div id="users" class="table-container">
         <!-- Felhasználók kezelése -->
         <h2>Felhasználók</h2>
         <table class="table table-striped">
@@ -88,7 +98,8 @@ $archived_comments_result = $dbconn->query($archived_comments_query);
                 <?php endwhile; ?>
             </tbody>
         </table>
-
+        </div>
+        <div id="posts" class="table-container" style="display: none;">
         <!-- Archivált posztok -->
         <h2 class="mt-5">Archivált Posztok</h2>
         <table class="table table-striped">
@@ -133,7 +144,8 @@ $archived_comments_result = $dbconn->query($archived_comments_query);
 </tbody>
 
         </table>
-
+        </div>
+        <div id="comments" class="table-container" style="display: none;">
         <!-- Archivált kommentek -->
         <h2 class="mt-5">Archivált Kommentek</h2>
         <table class="table table-striped">
@@ -176,7 +188,52 @@ $archived_comments_result = $dbconn->query($archived_comments_query);
 </tbody>
 
         </table>
+        </div>
+        <h1>Autó Hozzáadása</h1>
+        <form action="add_car.php" method="post" enctype="multipart/form-data">
+    
+    
+    
+    <label for="name">Autó neve:</label>
+    <input type="text" name="name" required>
+    <label for="brand">Márka:</label>
+    <select name="brand_id" required>
+        <?php
+        $brand_query = "SELECT id, name FROM brands";
+        $brand_result = $dbconn->query($brand_query);
+        while ($brand = $brand_result->fetch_assoc()) {
+            echo "<option value='{$brand['id']}'>{$brand['name']}</option>";
+        }
+        ?>
+    </select>
+
+    <label for="bg_image">Háttérkép:</label>
+    <input type="file" name="bg_image" accept="image/*">
+
+    <button type="submit">Hozzáadás</button>
+</form>
+<h1>Márka hozzáadása</h1>
+<form action="add_brand.php" method="post" enctype="multipart/form-data">
+    <label for="name">Márka neve:</label>
+    <input type="text" name="name" required>
+
+    <label for="logo">Logó:</label>
+    <input type="file" name="logo" accept="image/*">
+
+    <button type="submit">Márka hozzáadása</button>
+</form>
+
+
     </div>
+    <script>
+        document.getElementById("tableSelector").addEventListener("change", function() {
+            let selectedTable = this.value;
+            document.querySelectorAll(".table-container").forEach(table => {
+                table.style.display = "none";
+            });
+            document.getElementById(selectedTable).style.display = "block";
+        });
+    </script>
 </body>
 
 </html>

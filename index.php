@@ -24,7 +24,7 @@ session_start();
 
 ?>
 <h1>főoldal</h1>
-<a href="admin/moderator.php">a</a>
+
 
 <?php 
 include "./kisegitok/footer.php";

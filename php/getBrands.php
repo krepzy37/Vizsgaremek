@@ -17,6 +17,7 @@ $brands = [];
 while ($row = mysqli_fetch_assoc($result)) {
     $brandName = $row['brand_name'];
     $brandLogo_url = $row['logo_url'];
+    //$brandName = strtr($brandName, ['Š' => 'S', 'š' => 's']); Skoda rendezés problémák
     // URL-kompatibilis azonosító létrehozása
     $brandId = strtolower(str_replace(['á', 'é', 'í', 'ó', 'ö', 'ő', 'ú', 'ü', 'ű', ' '], ['a', 'e', 'i', 'o', 'o', 'o', 'u', 'u', 'u', '-'], $brandName));
 
@@ -28,6 +29,11 @@ while ($row = mysqli_fetch_assoc($result)) {
         $brands[$brandName]['models'][] = ['name' => $row['model_name']];
     }
 }
+
+$collator = collator_create('hu_HU');  // Magyar nyelvi beállítások
+uksort($brands, function($a, $b) use ($collator) {
+    return collator_compare($collator, $a, $b);
+});
 
 // A modelleket betűrendbe rendezzük
 foreach ($brands as &$brand) {
