@@ -9,15 +9,29 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Főoldal</a>
-                    </li>
-                    <li>
+                <li class="nav-item">
+
+<a href="index.php" class="btn-shine main-page-btn nav-link">Főoldal</a>
+
+</li>
+                   <!-- <li>
                     <form action="profile_search.php" method="GET" class="d-flex ms-auto ">
                     <input type="text" name="query" placeholder="Felhasználónév" class="form-control" id="searchInput" onkeyup="searchUsers(this.value)">
                     
                 </form>
-                    </li>
+                    </li>-->
+                    <li>
+                    <div class="search-container " style="position: relative;">
+    <div class="group">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="search-icon">
+            <g>
+                <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+            </g>
+        </svg>
+        <input autocomplete="off" type="text" id="query" name="query" placeholder="Felhasználónév" class="inputS" onkeyup="searchUsers(this.value)">
+    </div>
+    <div  id="searchResults"></div> <!-- A találatok itt jelennek meg -->
+</div>
                     
                 </ul>
                 <!-- Keresési sáv -->
@@ -28,6 +42,25 @@
     $id = $_SESSION['id'];
     $query = mysqli_query($dbconn, "SELECT username, role, profile_picture_url FROM users WHERE id = $id");
     $loggedInUser = mysqli_fetch_assoc($query); // Eredeti $user helyett új változó
+    if (isset($_GET['query'])) {
+        $query = mysqli_real_escape_string($dbconn, $_GET['query']);
+        $result = mysqli_query($dbconn, "SELECT id, username, profile_picture_url FROM users WHERE username LIKE '%$query%' LIMIT 5");
+    
+        if (mysqli_num_rows($result) > 0) {
+            echo '<ul>';
+            while ($row = mysqli_fetch_assoc($result)) {
+                echo '<li>
+                        <a href="profile.php?user_id=' . $row['id'] . '">
+                            <img src="php/img/' . htmlspecialchars($row['profile_picture_url']) . '" alt="Profilkép">
+                            ' . htmlspecialchars($row['username']) . '
+                        </a>
+                      </li>';
+            }
+            echo '</ul>';
+        } else {
+            echo '<p style="padding: 10px;">Nincs találat</p>';
+        }
+    }
 ?>
 <?php if ($loggedInUser['role'] == 'Moderator'): ?>
                         <a href="admin/moderator.php" class="btn btn-outline-light btn-warning text-dark me-2">Moderátori Panel</a>
@@ -46,6 +79,9 @@
             </div>
         </div>
     </nav>
+    <div class="search-container" style="position: relative;">
+    
+    <div id="searchResults"></div>
     <div id="searchResults" class="position-absolute w-100 " style="top: 70px; z-index: 9998;"></div>
     <div class="menu-btn">
     <div class="menu-btn__burger">
@@ -62,39 +98,63 @@
         margin-left: auto;
     }
 
-    /* Keresési eredmények */
-    #searchResults {
-        background-color: #fff;
-        max-height: 200px;
-        overflow-y: auto;
-        margin-top: 5px;
-        position: absolute;
-        top: 70px; /* navbar alatt */
-        left: 0;
-        right: 0;
-        z-index: 9998;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    }
 
-    #searchResults ul {
-        list-style: none;
-        padding: 0;
-    }
+#searchResults {
+    background-color: #fff;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 5px;
+    position: absolute;
+    left: 0;
+    width: 100%; /* A keresőmező szélességéhez igazodik */
+    z-index: 9999;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    background-color:rgb(0, 0, 0);
+}
 
-    #searchResults li {
-        padding: 8px;
-        border-bottom: 1px solid #ddd;
-    }
+/* Keresési találatok listája */
+#searchResults ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    
+}
 
-    #searchResults li a {
-        text-decoration: none;
-        color: #000;
-    }
 
-    #searchResults li a:hover {
-        background-color: #f1f1f1;
-    }
-</style>
+
+/* Egyes találati elemek */
+#searchResults li {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+/* Profilkép a keresési találatokban */
+#searchResults li img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+/* Linkek a találatok között */
+#searchResults li a {
+    text-decoration: none;
+    color: #000;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    color: #fff;
+}
+
+/* Hover effektus */
+#searchResults li:hover {
+    background-color:rgb(26, 25, 25);
+}
+
+
+    </style>
 <!-- Oldalsó Menü -->
 <div class="side-menu">
     <div class="offcanvas-body">
@@ -171,20 +231,20 @@
 
 
 function searchUsers(query) {
-        if (query.length === 0) {
-            document.getElementById("searchResults").innerHTML = "";
-            return;
-        }
+                if (query.length === 0) {
+                    document.getElementById("searchResults").innerHTML = "";
+                    return;
+                }
 
-        let xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (this.readyState === 4 && this.status === 200) {
-                document.getElementById("searchResults").innerHTML = this.responseText;
+                let xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (this.readyState === 4 && this.status === 200) {
+                        document.getElementById("searchResults").innerHTML = this.responseText;
+                    }
+                };
+                xhr.open("GET", "search_users.php?query=" + query, true);
+                xhr.send();
             }
-        };
-        xhr.open("GET", "search_users.php?query=" + query, true);
-        xhr.send();
-    }
 </script>
 
 

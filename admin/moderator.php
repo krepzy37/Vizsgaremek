@@ -41,7 +41,11 @@ WHERE c.status = 'Archived';
 $archived_comments_result = $dbconn->query($archived_comments_query);
 
 
-
+$query = "SELECT cars.id, cars.name AS car_name, brands.name AS brand_name, cars.bg_image_url 
+          FROM cars 
+          JOIN brands ON cars.brand_id = brands.id
+          ORDER BY cars.id DESC";
+$car_result = $dbconn->query($query);
 ?>
 
 <!DOCTYPE html>
@@ -188,6 +192,31 @@ $archived_comments_result = $dbconn->query($archived_comments_query);
 </tbody>
 
         </table>
+        </div>
+        <div class="table-container">
+        <table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Autó Neve</th>
+        <th>Márka</th>
+        <th>Háttérkép</th>
+        <th>Műveletek</th>
+    </tr>
+
+    <?php while ($row = $car_result->fetch_assoc()): ?>
+    <tr>
+        <td><?= $row['id'] ?></td>
+        <td><?= htmlspecialchars($row['car_name']) ?></td>
+        <td><?= htmlspecialchars($row['brand_name']) ?></td>
+        <td>
+            <img src="../php/img/<?= htmlspecialchars($row['bg_image_url']) ?>" width="100" alt="Car Image">
+        </td>
+        <td>
+            <a href="edit_car.php?id=<?= $row['id'] ?>">Módosítás</a>
+        </td>
+    </tr>
+    <?php endwhile; ?>
+</table>
         </div>
         <h1>Autó Hozzáadása</h1>
         <form action="add_car.php" method="post" enctype="multipart/form-data">

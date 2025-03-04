@@ -43,7 +43,7 @@ $query = "SELECT posts.id, posts.title, posts.user_id, posts.body, posts.post_im
           FROM posts 
           JOIN cars ON posts.car_id = cars.id
           JOIN brands ON cars.brand_id = brands.id
-          WHERE posts.user_id = ? 
+          WHERE posts.user_id = ? AND posts.status = 'Active' 
           ORDER BY posts.created_at DESC";
 $stmt = $dbconn->prepare($query);
 $stmt->bind_param("i", $view_user_id);
@@ -66,22 +66,91 @@ $posts = $result->fetch_all(MYSQLI_ASSOC);
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<div class="container mt-5">
+<div class="main-container mt-5">
     <div class="main-content">
         <?php include 'kisegitok/nav.php'; ?>
-        <?php $roleTag = ($user['role'] == 'Moderator') ? " <span class='text-warning'>[Moderator]</span>" : ""; ?>
-        <h1><?php echo htmlspecialchars($user['username']) . $roleTag; ?></h1>
-        <img src="php/img/<?php echo htmlspecialchars($user['profile_picture_url']) ?>" alt="Profilkép" style="width:100px; height:100px; border-radius:50%;">
-        <p>Státusz: <?php echo $status; ?></p>
-        <?php 
-if (isset($_SESSION['id']) && isset($_GET['user_id']) && $_SESSION['id'] == $_GET['user_id']) {
-    echo '<a href="update.php">Profil szerkesztése</a>';
-}
-        ?>
-        <h2>Posztok</h2>
+        <video autoplay muted loop id="myVideo">
+  <source src="php/img/vecteezy_darkroom-background-with-a-platform-to-showcase-product_30964617.mov" type="video/mp4">
+</video>
+<style>
+        body {
+            background-color: #121212;
+            color: white;
+        }
+        #myVideo {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .user-info {
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .user-info img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+        .post-list {
+            margin-top: 20px;
+        }
+        .card {
+            background-color: #1e1e1e;
+            border: none;
+        }
+        #posts{
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+        }
 
+        #status{
+            font-weight: 600;
+        }
+        
+    </style>
+    
+</head>
+
+<body>
+    <video autoplay muted loop id="myVideo">
+        <source src="php/img/vecteezy_darkroom-background-with-a-platform-to-showcase-product_30964617.mov" type="video/mp4">
+    </video>
+    
+    <div class="container mt-5">
+        <div class="user-info">
+        <?php $roleTag = ($user['role'] == 'Moderator') ? " <span class='text-warning'>[Moderator]</span>" : ""; ?>
+            <h1><?php echo htmlspecialchars($user['username']) . $roleTag; ?></h1>
+            <img src="php/img/<?php echo htmlspecialchars($user['profile_picture_url']); ?>" alt="Profilkép">
+            <p id="status"><?php echo $status; ?></p>
+            <?php if (isset($_SESSION['id']) && $_SESSION['id'] == $view_user_id): ?>
+                <a href="update.php" class="btn btn-primary">Profil szerkesztése</a>
+            <?php endif; ?>
+        </div>
+
+        <script>
+    const statusElement = document.getElementById("status");
+    const userStatus = statusElement.textContent.trim(); // Szöveg lekérése és felesleges szóközök eltávolítása
+
+    if (userStatus === "Online") {
+        statusElement.style.color = "green";
+    } else if (userStatus === "Offline") {
+        statusElement.style.color = "red";
+    }
+</script>
         <div class="post-list">
+        
             <?php if (count($posts) > 0): ?>
+                <h2 id="posts">Posztok</h2>
                 <?php foreach ($posts as $post): ?>
                     <?php
                     //$profilePic = !empty($post['profile_picture_url']) ? 'php/img/' . htmlspecialchars($post['profile_picture_url']) : 'php/img/default.png';
@@ -308,7 +377,7 @@ WHERE comment_id = ?";
 
                 <?php endforeach; ?>
             <?php else: ?>
-                <p>Nincs poszt.</p>
+                <p id="posts">Nincs poszt.</p>
             <?php endif; ?>
         </div>
         <div id="editCommentModal" class="modal">
